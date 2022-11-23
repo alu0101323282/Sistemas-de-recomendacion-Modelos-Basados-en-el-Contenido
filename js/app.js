@@ -1,117 +1,54 @@
 
-// Lectura de matriz desde fichero
+// Lectura de fichero de texto
 var fichero = document.getElementById('fichero');
 fichero.addEventListener('change', function(e) {
-    matriz_entrada = [];
+    texto_entrada = [];
     let reader = new FileReader();
     reader.readAsText(fichero.files[0]);
     reader.onload = function () {
-      let lineas = reader.result.toString();
-      let filas = lineas.split(/\r\n|\r|\n/);
-      let normalize = filas[0].split(' ');
-      min = parseInt(normalize[0]);
-      max = parseInt(normalize[1]);
-      filas.shift();
+      let texto = reader.result.toString();
+      var regex = /[.,]/g;
+      texto = texto.replace(regex, '');
+      let filas = texto.split(/\r\n|\r|\n/);
       filas.forEach((f) => {
         let fila = f.split(' ');
-        fila = fila.map(i => {
-            console.log(i);
-            if (i === '-'){
-              return i;
-            } else {
-              return (i - min)/(max - min);
-            }
-        });
-        matriz_entrada.push(fila);
+        texto_entrada.push(fila);
       })
     }
-    console.log(matriz_entrada);
+    console.log(texto_entrada);
   }, false)
 
-// Calculo de medias de los vecinos
-function medias(matriz) {
-    let medias = [];
-    for(i = 0; i < matriz.length; i++) {
-        let suma = 0;
-        let elementos = 0;
-        for(j = 0; j < matriz[i].length; j++) {
-            if(matriz[i][j] !== '-') {
-                suma += parseInt(matriz[i][j]);
-                elementos ++;
-            }
-        }
-        medias.push(suma/elementos);
+// Lectura de fichero de palabras de parada
+var stop_words = document.getElementById('stop-words');
+stop_words.addEventListener('change', function(e) {
+    palabras_parada = [];
+    let reader = new FileReader();
+    reader.readAsText(stop_words.files[0]);
+    reader.onload = function () {
+      let texto = reader.result.toString();
+      let palabra = texto.split(/\r\n|\r|\n/);
+      palabra.forEach((f) => {
+        palabras_parada.push(f);
+      })
     }
-    return medias;
-}
+    console.log(palabras_parada);
+  }, false)
 
-// Algoritmo de métrica de correlación de Pearson
-function pearson(matriz, medias, vecino1, vecino2) {
-    let numerador = 0;
-    let raiz1 = 0;
-    let raiz2 = 0;
-    for (let i = 0; i < matriz[0].length; i++) {
-        if ((matriz[vecino1][i] !== '-') && (matriz[vecino2][i] !== '-')) {
-            let diferencia1 = matriz[vecino1][i] - medias[vecino1];
-            let diferencia2 = matriz[vecino2][i] - medias[vecino2];
-            numerador += diferencia1 * diferencia2;
-            raiz1 += Math.pow((matriz[vecino1][i] - medias[vecino1]), 2);
-            raiz2 += Math.pow((matriz[vecino2][i] - medias[vecino2]), 2);
-        }
+// Lectura de fichero de lematización de términos
+var corpus = document.getElementById('corpus');
+corpus.addEventListener('change', function(e) {
+    lematizacion = [];
+    let reader = new FileReader();
+    reader.readAsText(corpus.files[0]);
+    reader.onload = function () {
+      texto = reader.result.toString();
+      lematizacion.push(JSON.parse(texto));
     }
-    let denominador = Math.sqrt(raiz1) * Math.sqrt(raiz2);
-    return parseFloat((numerador/denominador).toFixed(2));
-}
+    console.log(lematizacion);
+  }, false)
 
-// Algoritmo de métrica de distancia coseno
-function coseno(matriz, vecino1, vecino2) {
-    let numerador = 0;
-    let raiz1 = 0;
-    let raiz2 = 0;
-    for (let i = 0; i < matriz[0].length; i++) {
-        if ((matriz[vecino1][i] !== '-') && (matriz[vecino2][i] !== '-')) {
-            numerador += matriz[vecino1][i] * matriz[vecino2][i];
-            raiz1 += Math.pow(matriz[vecino1][i], 2);
-            raiz2 += Math.pow(matriz[vecino2][i], 2);
-        }
-    }
-    let denominador = Math.sqrt(raiz1) * Math.sqrt(raiz2);
-    return parseFloat((numerador/denominador).toFixed(2));
-}
 
-// Algoritmo de métrica de distancia euclídea
-function euclidea(matriz, vecino1, vecino2) {
-    let sumatorio = 0;
-    for (let i = 0; i < matriz[0].length; i++) {
-        if ((matriz[vecino1][i] !== '-') && (matriz[vecino2][i] !== '-')) {
-            sumatorio += Math.pow((matriz[vecino1][i] - matriz[vecino2][i]), 2);
-        }
-    }
-    console.log(parseFloat((Math.sqrt(sumatorio)).toFixed(2)));
-    return parseFloat((Math.sqrt(sumatorio)).toFixed(2));
-}
 
-// Algoritmo de predicción simple
-function predSimple(item, vecinos, similitudes, matriz) {
-    let numerador = 0;
-    let denominador = 0;
-    for(let i = 0; i < vecinos.length; i++) {
-        numerador += similitudes[vecinos[i]] * matriz[vecinos[i]][item];
-        denominador += Math.abs(similitudes[vecinos[i]]);
-    }
-    return numerador/denominador;
-}
-
-// Algoritmo de predicción de diferencia con la media
-function diferenciaMedia(usuario, item, vecinos, medias, similitudes, matriz) {
-    let numerador = 0;
-    let denominador = 0;
-    for(let i = 0; i < vecinos.length; i++) {
-        numerador += similitudes[vecinos[i]] * (matriz[vecinos[i]][item] - medias[vecinos[i]]);
-        denominador += Math.abs(similitudes[vecinos[i]]);
-    }
-    return medias[usuario] + numerador/denominador;
-}
 
 // Función principal del sistema de recomendación
 function sistemaRecomendacion(metrica, prediccion, numero_vecinos, medias_vecinos, vecinos_seleccionados, predicciones) {

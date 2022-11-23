@@ -26,31 +26,21 @@
       <h1 id="titulo">Sistemas de recomendación. Modelos Basados en el Contenido</h1>
       <form id="formulario" onsubmit="run();return false">
         <div>
-          <label>Matriz de entrada</label>
+          <label>Fichero de texto</label>
           <br>
           <input id="fichero" type="file" required>
         </div>
         <br>
-        <div class="input-field col s12">
-          <select id="metrica" required>
-            <option value="Correlación de Pearson">Correlación de Pearson</option>
-            <option value="Distancia coseno">Distancia coseno</option>
-            <option value="Distancia Euclídea">Distancia Euclídea</option>
-          </select>
-          <label>Métrica</label>
+        <div>
+          <label>Fichero de palabras de parada</label>
+          <br>
+          <input id="stop-words" type="file" required>
         </div>
         <br>
         <div>
-          <label>Número de vecinos</label>
-          <input id="numero_vecinos" type="number" required>
-        </div>
-        <br>
-        <div>
-          <label>Predicción</label>
-          <select id="tipo_prediccion" required>
-            <option value="Predicción simple">Predicción simple</option>
-            <option value="Diferencia con la media">Diferencia con la media</option>
-          </select>
+          <label>Fichero de lematización de términos</label>
+          <br>
+          <input id="corpus" type="file" required>
         </div>
         <br>
         <div>
