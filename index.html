@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+  <html lang="es">
+    <head>
+      <title>Sistema de recomendación</title>
+      <!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+      <script src="./jquery/jquery-3.6.0.min.js"></script>
+      <script src="./js/materialize.min.js"></script>
+      <link media="screen" href="./css/estilos.css" type="text/css" rel="stylesheet">
+      <meta charset="utf-8">
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <link href="/favicon.ico" type="image/x-icon" rel="icon" />
+    </head>
+    <body>
+      <nav id="cabecera" class="blue darken-2">
+        <div class="nav-wrapper">
+          <a href="#" class="brand-logo">
+            Gestión del conocimiento para las organizaciones
+          </a>
+        </div>
+      </nav>    
+      <div class="container">
+      <h1 id="titulo">Sistemas de recomendación. Modelos Basados en el Contenido</h1>
+      <form id="formulario" onsubmit="run();return false">
+        <div>
+          <label>Matriz de entrada</label>
+          <br>
+          <input id="fichero" type="file" required>
+        </div>
+        <br>
+        <div class="input-field col s12">
+          <select id="metrica" required>
+            <option value="Correlación de Pearson">Correlación de Pearson</option>
+            <option value="Distancia coseno">Distancia coseno</option>
+            <option value="Distancia Euclídea">Distancia Euclídea</option>
+          </select>
+          <label>Métrica</label>
+        </div>
+        <br>
+        <div>
+          <label>Número de vecinos</label>
+          <input id="numero_vecinos" type="number" required>
+        </div>
+        <br>
+        <div>
+          <label>Predicción</label>
+          <select id="tipo_prediccion" required>
+            <option value="Predicción simple">Predicción simple</option>
+            <option value="Diferencia con la media">Diferencia con la media</option>
+          </select>
+        </div>
+        <br>
+        <div>
+            <button type="submit" ip="aceptar">Aceptar</button>
+        </div>
+      </form>
+      <p id="salida"></p>
+    </div>
+      <!--JavaScript at end of body for optimized loading-->
+      <script type="text/javascript" src="js/app.js"></script> 
+      <script type="text/javascript" src="js/materialize.min.js"></script>   
+      <script language="javascript">
+        $(document).ready(function(){
+          $('select').formSelect();
+        });
+      </script>
+    </body>
+</html>
