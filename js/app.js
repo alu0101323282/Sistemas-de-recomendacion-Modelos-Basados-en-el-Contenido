@@ -2,51 +2,70 @@
 // Lectura de fichero de texto
 var fichero = document.getElementById('fichero');
 fichero.addEventListener('change', function(e) {
-    texto_entrada = [];
-    let reader = new FileReader();
-    reader.readAsText(fichero.files[0]);
-    reader.onload = function () {
-      let texto = reader.result.toString();
-      var regex = /[.,]/g;
-      texto = texto.replace(regex, '');
-      let filas = texto.split(/\r\n|\r|\n/);
-      filas.forEach((f) => {
-        let fila = f.split(' ');
-        texto_entrada.push(fila);
-      })
-    }
-    console.log(texto_entrada);
-  }, false)
+  texto_entrada = [];
+  let reader = new FileReader();
+  reader.readAsText(fichero.files[0]);
+  reader.onload = function () {
+    let texto = reader.result.toString().toLowerCase();
+    var regex = /[.,]/g;
+    texto = texto.replace(regex, '');
+    let filas = texto.split(/\r\n|\r|\n/);
+    filas.forEach((f) => {
+      let fila = f.split(' ');
+      texto_entrada.push(fila);
+    })
+  }
+  console.log(texto_entrada);
+}, false)
 
 // Lectura de fichero de palabras de parada
 var stop_words = document.getElementById('stop-words');
 stop_words.addEventListener('change', function(e) {
-    palabras_parada = [];
-    let reader = new FileReader();
-    reader.readAsText(stop_words.files[0]);
-    reader.onload = function () {
-      let texto = reader.result.toString();
-      let palabra = texto.split(/\r\n|\r|\n/);
-      palabra.forEach((f) => {
-        palabras_parada.push(f);
-      })
-    }
-    console.log(palabras_parada);
-  }, false)
+  palabras_parada = [];
+  let reader = new FileReader();
+  reader.readAsText(stop_words.files[0]);
+  reader.onload = function () {
+    let texto = reader.result.toString();
+    let palabra = texto.split(/\r\n|\r|\n/);
+    palabra.forEach((f) => {
+      palabras_parada.push(f);
+    })
+  }
+  console.log(palabras_parada);
+}, false)
 
 // Lectura de fichero de lematización de términos
 var corpus = document.getElementById('corpus');
 corpus.addEventListener('change', function(e) {
-    lematizacion = [];
-    let reader = new FileReader();
-    reader.readAsText(corpus.files[0]);
-    reader.onload = function () {
-      texto = reader.result.toString();
-      lematizacion.push(JSON.parse(texto));
-    }
-    console.log(lematizacion);
-  }, false)
+  lematizacion = [];
+  let reader = new FileReader();
+  reader.readAsText(corpus.files[0]);
+  reader.onload = function () {
+    texto = reader.result.toString();
+    lematizacion.push(JSON.parse(texto));
+  }
+  console.log(lematizacion);
+}, false)
 
+// Filtrado de palabras de parada y lematización de términos
+function filtrado() {
+  texto = [];
+  texto_entrada.forEach((linea) => {
+    fila = [];
+    linea.forEach((palabra) => {
+      if(!palabras_parada.includes(palabra)) {
+
+        if (lematizacion.hasOwnProperty(palabra)) {
+          fila.push(lematizacion[palabra]);
+        } else {
+          fila.push(palabra);
+        }
+      }
+    });
+    texto.push(fila);
+  });
+  console.log(texto);
+}
 
 
 
