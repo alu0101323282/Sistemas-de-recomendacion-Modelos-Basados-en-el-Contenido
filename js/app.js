@@ -1,5 +1,5 @@
 
-// Lectura de fichero de texto
+// Lee el fichero de texto
 var fichero = document.getElementById('fichero');
 fichero.addEventListener('change', function(e) {
   texto_entrada = [];
@@ -17,7 +17,7 @@ fichero.addEventListener('change', function(e) {
   }
 }, false)
 
-// Lectura de fichero de palabras de parada
+// Lee el fichero de palabras de parada
 var stop_words = document.getElementById('stop-words');
 stop_words.addEventListener('change', function(e) {
   palabras_parada = [];
@@ -32,7 +32,7 @@ stop_words.addEventListener('change', function(e) {
   }
 }, false)
 
-// Lectura de fichero de lematización de términos
+// Lee el fichero de lematización de términos
 var corpus = document.getElementById('corpus');
 corpus.addEventListener('change', function(e) {
   lematizacion = [];
@@ -44,7 +44,7 @@ corpus.addEventListener('change', function(e) {
   }
 }, false)
 
-// Filtrado de palabras de parada y lematización de términos
+// Filtra las palabras de parada y aplica la lematización de términos
 function filtrado() {
   texto = [];
   texto_entrada.forEach((linea) => {
@@ -63,6 +63,7 @@ function filtrado() {
   return texto;
 }
 
+// Extrae todos los términos de los documentos
 function extraccionTerminos(texto) {
   var terminos = [];
   texto.forEach((documento) => {
@@ -75,6 +76,7 @@ function extraccionTerminos(texto) {
   return terminos;
 }
 
+// Hace un recuento de aparación de términos por documentos
 function recuento(texto) {
   var recuento = [];
   texto.forEach((documento) => {
@@ -91,6 +93,7 @@ function recuento(texto) {
   return recuento;
 }
 
+// Calcula el DF
 function calcularDf(terminos, recuento) {
   var df = [];
   terminos.forEach((termino) => {
@@ -105,6 +108,7 @@ function calcularDf(terminos, recuento) {
   return df;
 }
 
+// Calcula el TF
 function calcularTf(terminos, recuento) {
   var tf = [];
   for (i = 0; i < recuento.length; i++) {
@@ -121,6 +125,7 @@ function calcularTf(terminos, recuento) {
   return tf;
 }
 
+// Calcula el IDF
 function calcularIdf(terminos, recuento) {
   const df = calcularDf(terminos, recuento);
   var idf = [];
@@ -130,6 +135,7 @@ function calcularIdf(terminos, recuento) {
   return idf;
 }
 
+// Calcula la longitud de los vectores de TF de cada documento
 function longitudVectores(tf) {
   var long_vectores = []
   tf.forEach((documento) => {
@@ -142,6 +148,7 @@ function longitudVectores(tf) {
   return long_vectores;
 }
 
+// Calcula el TF-IDF
 function calcularTfIdf(terminos, tf) {
   const long_vectores = longitudVectores(tf);
   var tfIdf = [];
@@ -155,6 +162,7 @@ function calcularTfIdf(terminos, tf) {
   return tfIdf;
 }
 
+// Calcula la similaridad entre cada par de documentos calculando los valores del coseno
 function similaridadCoseno(terminos, tfIdf) {
   var similaridades = [];
   for(i = 0; i < tfIdf.length; i++) {
@@ -168,9 +176,6 @@ function similaridadCoseno(terminos, tfIdf) {
   }
   return similaridades;
 }
-
-
-
 
 // Función principal del sistema de recomendación
 function sistemaRecomendacion() {
