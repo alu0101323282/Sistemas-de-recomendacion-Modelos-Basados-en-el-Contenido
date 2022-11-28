@@ -15,7 +15,6 @@ fichero.addEventListener('change', function(e) {
       texto_entrada.push(fila);
     })
   }
-  console.log(texto_entrada);
 }, false)
 
 // Lectura de fichero de palabras de parada
@@ -31,7 +30,6 @@ stop_words.addEventListener('change', function(e) {
       palabras_parada.push(f);
     })
   }
-  console.log(palabras_parada);
 }, false)
 
 // Lectura de fichero de lematización de términos
@@ -44,168 +42,180 @@ corpus.addEventListener('change', function(e) {
     texto = reader.result.toString();
     lematizacion.push(JSON.parse(texto));
   }
-  console.log(lematizacion);
 }, false)
 
 // Filtrado de palabras de parada y lematización de términos
 function filtrado() {
   texto = [];
   texto_entrada.forEach((linea) => {
-    fila = [];
+    documento = [];
     linea.forEach((palabra) => {
       if(!palabras_parada.includes(palabra)) {
-
-        if (lematizacion.hasOwnProperty(palabra)) {
-          fila.push(lematizacion[palabra]);
+        if (lematizacion[0].hasOwnProperty(palabra)) {
+          documento.push(lematizacion[0][palabra]);
         } else {
-          fila.push(palabra);
+          documento.push(palabra);
         }
       }
     });
-    texto.push(fila);
+    texto.push(documento);
   });
-  console.log(texto);
+  return texto;
 }
+
+function extraccionTerminos(texto) {
+  var terminos = [];
+  texto.forEach((documento) => {
+    documento.forEach((palabra) => {
+      if(!terminos.includes(palabra)) {
+        terminos.push(palabra);
+      }
+    });
+  });
+  return terminos;
+}
+
+function recuento(texto) {
+  var recuento = [];
+  texto.forEach((documento) => {
+    const contador = {};
+    documento.forEach((palabra) => {
+      if (contador[palabra]) {
+        contador[palabra] += 1;
+      } else {
+        contador[palabra] = 1;
+      }
+    });
+    recuento.push(contador);
+  });
+  return recuento;
+}
+
+function calcularDf(terminos, recuento) {
+  var df = [];
+  terminos.forEach((termino) => {
+    contador = 0;
+    recuento.forEach((documento) => {
+      if (documento[termino]) {
+        contador += 1;
+      }
+    });
+    df.push(contador);
+  });
+  return df;
+}
+
+function calcularTf(terminos, recuento) {
+  var tf = [];
+  for (i = 0; i < recuento.length; i++) {
+    aux = [];
+    terminos.forEach((termino) => {
+      if(recuento[i][termino]) {
+        aux.push(1 + Math.log10(recuento[i][termino]));
+      } else {
+        aux.push(0);
+      }
+    });
+    tf.push(aux);
+  }
+  return tf;
+}
+
+function calcularIdf(terminos, recuento) {
+  const df = calcularDf(terminos, recuento);
+  var idf = [];
+  for(i = 0; i < terminos.length; i++) {
+    idf.push(Math.log10(recuento.length/df[i]));
+  }
+  return idf;
+}
+
+function longitudVectores(tf) {
+  var long_vectores = []
+  tf.forEach((documento) => {
+    longitud = 0
+    documento.forEach((valor) => {
+      longitud += Math.pow(valor, 2);
+    });
+    long_vectores.push(Math.sqrt(longitud));
+  });
+  return long_vectores;
+}
+
+function calcularTfIdf(terminos, tf) {
+  const long_vectores = longitudVectores(tf);
+  var tfIdf = [];
+  for(i = 0; i < tf.length; i++) {
+    var aux = [];
+    for(j = 0; j < terminos.length; j++) {
+      aux.push(tf[i][j]/long_vectores[i]);
+    }
+    tfIdf.push(aux);
+  }
+  return tfIdf;
+}
+
+function similaridadCoseno(terminos, tfIdf) {
+  var similaridades = [];
+  for(i = 0; i < tfIdf.length; i++) {
+    for(j = i+1; j < tfIdf.length; j++) {
+      var sim = 0;
+      for(k = 0; k < terminos.length; k++) {
+        sim += tfIdf[i][k] * tfIdf[j][k];
+      }
+      similaridades.push(sim);
+    }
+  }
+  return similaridades;
+}
+
 
 
 
 // Función principal del sistema de recomendación
-function sistemaRecomendacion(metrica, prediccion, numero_vecinos, medias_vecinos, vecinos_seleccionados, predicciones) {
-    let matriz_salida = [];
-    for(let i = 0; i < matriz_entrada.length; i++) {
-        let fila = [];
-        for(let j = 0; j < matriz_entrada[i].length; j++) {
-            fila.push(matriz_entrada[i][j]);
-        }
-        matriz_salida.push(fila);
-    }
-    for(let i = 0; i < matriz_entrada.length; i++) {
-        for(let j = 0; j < matriz_entrada[i].length; j++) {
-            if(matriz_entrada[i][j] === '-') {
-                let similitudes = [];
-                let vecinos = [];
-                switch (metrica) {
-                  case 'Correlación de Pearson':
-                    for(let k = 0; k < matriz_entrada.length; k++) {
-                      similitudes.push(pearson(matriz_entrada, medias_vecinos, i, k));
-                    }
-                    break;
-                  case 'Distancia coseno':
-                    for(let k = 0; k < matriz_entrada.length; k++) {
-                      similitudes.push(coseno(matriz_entrada, i, k));
-                    }
-                    break;
-                  case 'Distancia Euclídea':
-                    for(let k = 0; k < matriz_entrada.length; k++) {
-                      similitudes.push(euclidea(matriz_entrada, i, k));
-                    }
-                    break;
-                }
-                let aux = [];
-                for(let l = 0; l < similitudes.length; l++) {
-                    aux.push(similitudes[l]);
-                }
-                while (vecinos.length !== numero_vecinos) {
-                    if((aux.indexOf(Math.max(...aux)) !== i) && (matriz_entrada[aux.indexOf(Math.max(...aux))][j] != '-')) {  
-                      vecinos.push(aux.indexOf(Math.max(...aux)));
-                    }
-                    aux[aux.indexOf(Math.max(...aux))] = -100;
-                }
-                vecinos_seleccionados.push(vecinos);
-                switch (prediccion) {
-                    case 'Predicción simple':
-                        predicciones.push(parseFloat(predSimple(j, vecinos, similitudes, matriz_entrada))  * (max - min) + min);
-                        matriz_salida[i][j] = '<b><u>' + Math.round(parseFloat(predSimple(j, vecinos, similitudes, matriz_entrada))  * (max - min) + min) + '</u></b>';
-                    break;
-                    case 'Diferencia con la media':
-                        predicciones.push(parseFloat(diferenciaMedia(i, j, vecinos, medias_vecinos, similitudes, matriz_entrada)) * (max - min) + min);
-                        matriz_salida[i][j] = '<b><u>' + Math.round(parseFloat(diferenciaMedia(i, j, vecinos, medias_vecinos, similitudes, matriz_entrada)) * (max - min) + min) + '</u></b>';
-                    break;
-                }
-            }
-        }
-    }
-    for(let i = 0; i < matriz_salida.length; i++) {
-      for(let j = 0; j < matriz_salida[i].length; j++) {
-          if(typeof matriz_salida[i][j] === "number") {
-            matriz_salida[i][j] = (matriz_salida[i][j] * (max - min) + min);
-          }
-      }
-  }
-    return matriz_salida;
+function sistemaRecomendacion() {
+  const texto = filtrado();
+  const terminos  = extraccionTerminos(texto);
+  const rec = recuento(texto);
+  console.log(rec);
+  const tf = calcularTf(terminos, rec);
+  const idf = calcularIdf(terminos, rec);
+  const tfIdf = calcularTfIdf(terminos, tf);
+  const similaridades = similaridadCoseno(terminos, tfIdf);
+  return {'terminos': terminos, 'TF': tf, 'IDF': idf, 'TFIDF': tfIdf, 'similaridades': similaridades};
 }
 
 // Función llamada desde index.html
 function run() {
-    let metrica = document.getElementById('metrica').value;
-    let prediccion = document.getElementById('tipo_prediccion').value;
-    let medias_vecinos = medias(matriz_entrada);
-    let vecinos_seleccionados = [];
-    let predicciones = [];
-    let numero_vecinos = parseInt(document.getElementById('numero_vecinos').value);
-    if ((numero_vecinos < 1) || (numero_vecinos >= matriz_entrada.length)) {
-      alert('ERROR: Debe elegir al menos 1 y como máximo ' + (matriz_entrada.length - 1)  + ' vecinos');
-      throw new Error();
+  const resultado = sistemaRecomendacion();
+  var tablas = '';
+  for(i = 0; i < resultado.TF.length; i++) {
+    num = i+1;
+    tablas += '<h2>Documento ' + num + '</h2><table><tr><td>Índice</td><td>Términos</td><td>TF</td><td>IDF</td><td>TF-IDF</td></tr>';
+    for(j = 0; j < resultado.terminos.length; j++) {
+      tablas += '<tr>';
+      var indice = j+1;
+      tablas += '<td>' + indice + '</td>';
+      tablas += '<td>' + resultado.terminos[j] + '</td>';
+      tablas += '<td>' + resultado.TF[i][j] + '</td>';
+      tablas += '<td>' + resultado.IDF[j] + '</td>';
+      tablas += '<td>' + resultado.TFIDF[i][j] + '</td>';
+      tablas += '</tr>';
     }
-    let matriz_resultado = sistemaRecomendacion(metrica, prediccion, numero_vecinos, medias_vecinos, vecinos_seleccionados, predicciones);
-    console.log(matriz_resultado);
-    let salida = '<h2>Resultados:</h2><h3>Matriz:</h3>';
-    for(let i = 0; i < matriz_resultado.length; i++) {
-        for(let j = 0; j < matriz_resultado[i].length; j++) {
-           salida += matriz_resultado[i][j] + ' '; 
-        }
-        salida += '<br>';
+    tablas += '</table>';
+  }
+  var similaridades = '<h2>Similaridades</h2><table>';
+  var index = 0;
+  for(i = 0; i < resultado.TF.length; i++) {
+    for(j = i+1; j < resultado.TF.length; j++) {
+      var doc1 = i+1;
+      var doc2 = j+1;
+      similaridades += '<tr><td>Documentos ' + doc1 + ' y ' + doc2 + '</td>';
+      similaridades += '<td>' + resultado.similaridades[index] + '</td></tr>';
+      index++;
     }
-    salida += '<h3>Similaridad entre vecinos - ' + metrica + ':</h3>';
-    for(let i = 0; i < matriz_resultado.length; i++) {
-        salida += '<h4>Vecino ' + (i+1) + ':</h4>';
-        for(let j = 0; j < matriz_resultado.length; j++) {
-           if(i !== j) {
-             switch (metrica) {
-               case 'Correlación de Pearson':
-                 salida += 'Con vecino ' + (j+1) + ': <b>' + pearson(matriz_entrada, medias_vecinos, i, j) + '</b><br>';
-                 break;
-              case 'Distancia coseno':
-                  salida += 'Con vecino ' + (j+1) + ': <b>' + coseno(matriz_entrada, i, j) + '</b><br>';
-                  break;
-                case 'Distancia Euclídea':
-                  salida += 'Con vecino ' + (j+1) + ': <b>' + euclidea(matriz_entrada, i, j) + '</b><br>';
-                  break;
-             }
-           }
-        }
-    }
-    salida += '<h3>Vecinos seleccionados:</h3>';
-    let l = 0;
-    for(let i = 0; i < matriz_resultado.length; i++) {
-        for(let j = 0; j < matriz_resultado[i].length; j++) {
-          if(matriz_entrada[i][j] === '-') {
-            salida += 'Predicción calificación del Vecino ' + (i+1) + ' al item ' + (j+1) + ': <b>vecinos ';
-            for(let k = 0; k < numero_vecinos; k++) {
-              salida += (parseInt(vecinos_seleccionados[l][k]) + 1);
-              if (k === numero_vecinos-2) {
-                salida += ' y ';
-              } else if (k === numero_vecinos-1) {
-                salida += ' ';
-              } else {
-                salida += ', ';
-              }
-            }
-            salida += '</b><br>';
-            l++;
-          }
-        }
-    }
-    salida += '<h3>Predicciones de la matriz de utilidad en base a los vecinos seleccionados:</h3>';
-    k = 0;
-    for(let i = 0; i < matriz_resultado.length; i++) {
-        for(let j = 0; j < matriz_resultado[i].length; j++) {
-          if(matriz_entrada[i][j] === '-') {
-            salida += 'Predicción calificación del Vecino ' + (i+1) + ' al item ' + (j+1) + ': <b>';
-            salida += predicciones[k] + '</b><br>';
-            k++;
-          }
-        }
-    }
-    document.getElementById('salida').innerHTML = salida;
+  }
+  similaridades += '</table>';
+  document.getElementById('tablas').innerHTML = tablas;
+  document.getElementById('similaridades').innerHTML = similaridades;
 }
