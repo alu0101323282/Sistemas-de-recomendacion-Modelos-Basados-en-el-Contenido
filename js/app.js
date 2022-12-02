@@ -166,13 +166,19 @@ function calcularTfIdf(terminos, tf) {
 function similaridadCoseno(terminos, tfIdf) {
   var similaridades = [];
   for(i = 0; i < tfIdf.length; i++) {
-    for(j = i+1; j < tfIdf.length; j++) {
+    var simDoc = [];
+    for(j = 0; j < tfIdf.length; j++) {
       var sim = 0;
-      for(k = 0; k < terminos.length; k++) {
-        sim += tfIdf[i][k] * tfIdf[j][k];
+      if (i === j) {
+        sim = '-';
+      } else {
+        for(k = 0; k < terminos.length; k++) {
+          sim += tfIdf[i][k] * tfIdf[j][k];
+        }
       }
-      similaridades.push(sim);
+      simDoc.push(sim);
     }
+    similaridades.push(simDoc);
   }
   return similaridades;
 }
@@ -182,11 +188,11 @@ function sistemaRecomendacion() {
   const texto = filtrado();
   const terminos  = extraccionTerminos(texto);
   const rec = recuento(texto);
-  console.log(rec[0]);
   const tf = calcularTf(terminos, rec);
   const idf = calcularIdf(terminos, rec);
   const tfIdf = calcularTfIdf(terminos, tf);
   const similaridades = similaridadCoseno(terminos, tfIdf);
+  console.log(similaridades);
   return {'terminos': terminos, 'TF': tf, 'IDF': idf, 'TFIDF': tfIdf, 'similaridades': similaridades};
 }
 
@@ -212,16 +218,21 @@ function run() {
     }
     tablas += '</table>';
   }
-  var similaridades = '<h2>Similaridades</h2><table>';
-  var index = 0;
-  for(i = 0; i < resultado.TF.length; i++) {
-    for(j = i+1; j < resultado.TF.length; j++) {
-      var doc1 = i+1;
-      var doc2 = j+1;
-      similaridades += '<tr><td>Documentos ' + doc1 + ' y ' + doc2 + '</td>';
-      similaridades += '<td>' + resultado.similaridades[index] + '</td></tr>';
-      index++;
+  var similaridades = '<h2>Similaridades</h2><table><tr><td>Documentos</td>';
+  var indice = 1;
+  for(i = 0; i < resultado.similaridades.length; i++) {
+    similaridades += '<td>' + indice + '</td>';
+    indice++;
+  }
+  similaridades += '</tr>';
+  indice = 1;
+  for(i = 0; i < resultado.similaridades.length; i++) {
+    similaridades += '<tr><td>' + indice + '</td>';
+    for(j = 0; j < resultado.similaridades[i].length; j++) {
+      similaridades += '<td>' + resultado.similaridades[i][j] + '</td>';
     }
+    similaridades += '</tr>';
+    indice++;
   }
   similaridades += '</table>';
   document.getElementById('tablas').innerHTML = tablas;
