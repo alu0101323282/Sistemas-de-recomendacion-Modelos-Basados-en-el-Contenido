@@ -182,7 +182,7 @@ function sistemaRecomendacion() {
   const texto = filtrado();
   const terminos  = extraccionTerminos(texto);
   const rec = recuento(texto);
-  console.log(rec);
+  console.log(rec[0]);
   const tf = calcularTf(terminos, rec);
   const idf = calcularIdf(terminos, rec);
   const tfIdf = calcularTfIdf(terminos, tf);
@@ -197,15 +197,18 @@ function run() {
   for(i = 0; i < resultado.TF.length; i++) {
     num = i+1;
     tablas += '<h2>Documento ' + num + '</h2><table><tr><td>Índice</td><td>Términos</td><td>TF</td><td>IDF</td><td>TF-IDF</td></tr>';
+    var indice = 1;
     for(j = 0; j < resultado.terminos.length; j++) {
-      tablas += '<tr>';
-      var indice = j+1;
-      tablas += '<td>' + indice + '</td>';
-      tablas += '<td>' + resultado.terminos[j] + '</td>';
-      tablas += '<td>' + resultado.TF[i][j] + '</td>';
-      tablas += '<td>' + resultado.IDF[j] + '</td>';
-      tablas += '<td>' + resultado.TFIDF[i][j] + '</td>';
-      tablas += '</tr>';
+      if (resultado.TF[i][j] !== 0) {
+        tablas += '<tr>';
+        tablas += '<td>' + indice + '</td>';
+        tablas += '<td>' + resultado.terminos[j] + '</td>';
+        tablas += '<td>' + resultado.TF[i][j] + '</td>';
+        tablas += '<td>' + resultado.IDF[j] + '</td>';
+        tablas += '<td>' + resultado.TFIDF[i][j] + '</td>';
+        tablas += '</tr>';
+        indice ++;
+      }
     }
     tablas += '</table>';
   }
