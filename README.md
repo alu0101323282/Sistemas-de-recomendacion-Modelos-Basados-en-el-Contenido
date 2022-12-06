@@ -1,4 +1,4 @@
-# Explicación del código
+# Descripción del código desarrollado
   Para el desarrollo de esta aplicación web se han utilizado HTML, CSS y JavaScript, así como el framework de diseño MaterializeCSS y la librería jQuery. El código desarrollado consta de un bloque de código encargado de lectura y extracción de datos de los ficheros de entrada (documentos, palabras de parada y lematización de términos) y de una serie de funciones que se encargarán de la aplicación de los algoritmos correspondientes y la muestra final de resultados en la interfaz de la aplicación web.
   De esta forma, se tienen las siguientes funciones:
   - filtrado(): Filtra las palabras de parada y aplica la lematización de términos.
