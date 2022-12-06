@@ -16,20 +16,23 @@
   En cuanto a su uso, a la aplicación se le debe dar como entrada un fichero de texto plano con los documentos a analizar, otro fichero de texto plano con las palabras de parada, y un fichero de lematización de términos en formato clave-valor. Está aplicación web ha sido desplegada a través de Github Pages y puede ser visitada a través del siguiente enlace: [Modelos basados en el contenido](https://alu0101323282.github.io/Sistemas-de-recomendacion-Modelos-Basados-en-el-Contenido/)
 
 # Ejemplo del funcionamiento:
-1. Elegir un fichero con el siguiente formato: </br>
-  1 5</br>
-  5 3 4 4 -</br>
-  3 1 2 3 3</br>
-  4 3 4 3 4</br>
-  3 3 1 5 4</br>
-  1 4 4 2 1</br>
+1. Elegir un fichero de texto plano con los documentos a analizar. Cada línea debe corresponder con un documento diferente: </br>
+  This is a dry wine ...</br>
+  Slightly reduced ...</br>
+  This is dominated ...</br>
+  Building on 150 ...</br>
+  Zesty orange peels ...</br>
 
-2. Elegir una métrica:</br>
-  Correlación de Pearson
+2. Elegir un fichero de texto plano con las palabras de parada. Cada palabra debe estar separa por un salto de línea:</br>
+  a</br>
+  able</br>
+  about</br>
+  above</br>
+  abroad</br>
 
-3. Escoger el número de vecinos: </br>
-  3
-4. Tipo de predicción:</br>
-  Predicción simple
+3. Elegir un fichero de lematización de términos. Este debe estar escrito en formato clave-valor, indicando para cada término su sustitución: </br>
+  {"is":"be","was":"be","does":"do","doing":"do", ... }
+  
+4. Hacer click en el botón [Aceptar]
 
-![image](https://user-images.githubusercontent.com/72199884/198886502-748286df-f4c8-4899-8c0d-d48923d7be74.png)
+![ModelosBC](https://user-images.githubusercontent.com/72404949/205883711-41b9be96-a06d-49f6-8e13-8b51f43b6a2b.jpg)
