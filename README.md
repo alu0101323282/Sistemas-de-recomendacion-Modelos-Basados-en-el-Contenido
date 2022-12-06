@@ -15,7 +15,7 @@
   
   En cuanto a su uso, a la aplicación se le debe dar como entrada un fichero de texto plano con los documentos a analizar, otro fichero de texto plano con las palabras de parada, y un fichero de lematización de términos en formato clave-valor. Está aplicación web ha sido desplegada a través de Github Pages y puede ser visitada a través del siguiente enlace: [Modelos basados en el contenido](https://alu0101323282.github.io/Sistemas-de-recomendacion-Modelos-Basados-en-el-Contenido/)
 
-# Ejemplo del funcionamiento:
+# Ejemplo de uso:
 1. Elegir un fichero de texto plano con los documentos a analizar. Cada línea debe corresponder con un documento diferente: </br>
   This is a dry wine ...</br>
   Slightly reduced ...</br>
